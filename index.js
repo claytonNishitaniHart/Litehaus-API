@@ -3,12 +3,21 @@ const app = express();
 const cors = require('cors');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-const { postNewUser, findUserByEmail } = require('./db-access-layer');
+const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
 
 app.use(cors());
 app.use(express.json());
 
 const port = process.env.PORT || 5000;
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await getUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+
+  }
+});
 
 app.post('/api/login', async (req, res) => {
   try {

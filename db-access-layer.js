@@ -1,5 +1,16 @@
 const { pool } = require('./config');
 
+const getUsers = async () => {
+  try {
+    const users = await pool.query(
+      'SELECT * FROM users'
+    );
+    return users.rows;
+  } catch (error) {
+
+  }
+}
+
 const postNewUser = async (name, email, hashedPassword) => {
   try {
     const newUser = await pool.query(
@@ -25,6 +36,7 @@ const findUserByEmail = async (email) => {
 }
 
 module.exports = {
+  getUsers,
   postNewUser,
   findUserByEmail
 };
