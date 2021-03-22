@@ -45,7 +45,7 @@ app.post('/api/login', async (req, res) => {
     const SECRET = process.env.SECRET;
     const token = jwt.sign(payload, SECRET);
 
-    return res.status(200).json({ success: 'User authenticated', token: token });
+    return res.status(200).json({ success: 'user authenticated', token: token });
   } catch (error) {
     return res.status(500).json({ error: 500, message: error.message });
   }
