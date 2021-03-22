@@ -61,7 +61,7 @@ app.post('/api/register', async (req, res) => {
     if (user.error == 500) {
       return res.status(500).json({ error: user.error, message: user.message });
     }
-
+    console.log(user);
     return res.status(201).json(user);
   } catch (error) {
     return res.status(500).json({ error: 500, message: error.message });
