@@ -62,7 +62,7 @@ app.post('/api/register', async (req, res) => {
     const userExists = await findUserByEmail(email);
 
     if (userExists) {
-      return res.status(400).json({ error: 'user already exists' });
+      return res.status(400).json({ error: 'user already exists', user: userExists });
     }
 
     const hashedPassword = await argon2.hash(password);
@@ -70,7 +70,6 @@ app.post('/api/register', async (req, res) => {
     if (user.error == 500) {
       return res.status(500).json({ error: user.error, message: user.message });
     }
-    console.log(user);
     return res.status(201).json(user);
   } catch (error) {
     return res.status(500).json({ error: 500, message: error.message });
