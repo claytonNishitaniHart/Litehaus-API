@@ -3,12 +3,39 @@ const app = express();
 const cors = require('cors');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const cookie_parser = require('cookie-parser');
 const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
 
 app.use(cors());
 app.use(express.json());
+app.use(cookie_parser());
 
 const port = process.env.PORT || 5000;
+
+app.post('/api/refresh_token', async (req, res) => {
+  const token = req.cookies.jid;
+
+  if (!token) {
+    return res.status(400).json({ error: 'no token' });
+  }
+
+  let payload = {};
+  try {
+    payload = jwt.verify(token, process.env.REFRESH_SECRET);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  const newPayload = {
+    sub: payload.sub,
+    name: payload.name,
+    iss: 'litehaus'
+  };
+
+  const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
+  res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
+  return res.status(201).json({ success: true, accessToken: newAccessToken });
+});
 
 app.get('/api/users', async (req, res) => {
   try {
@@ -43,7 +70,9 @@ app.post('/api/login', async (req, res) => {
     };
 
     const SECRET = process.env.SECRET;
-    const token = jwt.sign(payload, SECRET);
+    const REFRESH_SECRET = process.env.REFRESH_SECRET;
+    const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
 
     return res.status(200).json({ success: 'user authenticated', token: token });
   } catch (error) {
