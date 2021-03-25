@@ -125,8 +125,6 @@ app.post('/api/user', async (req, res) => {
       return res.status(400).json({ success: false, error: 'authorization required' });
     }
 
-    console.log(authorization.startsWith('Bearer '));
-
     if (!authorization.startsWith('Bearer ')) {
       return res.status(401).json({ success: false, error: 'Incorrect prefix' });
     }
