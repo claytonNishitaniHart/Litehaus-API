@@ -111,6 +111,37 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+app.post('/api/user', async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+      return res.status(400).json({ success: false, error: 'authorization required' });
+    }
+
+    if (!authorization.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Incorrect prefix' });
+    }
+
+    const token = authorization.split(' ')[1];
+
+    const SECRET = process.env.SECRET;
+    try {
+      const decoded = jwt.verify(token, SECRET);
+
+      const usernameExists = await findUserByEmail(decoded.sub);
+      if (!usernameExists) {
+        return res.status(401).json({ success: false, error: 'User not found' });
+      }
+    } catch (err) {
+      return res.status(401).json({ success: false, error: err });
+    }
+    return res.status(201).json({ success: true, user: { email: decoded.sub, name: decoded.name } });
+  } catch (error) {
+    return res.status(401).json({ success: false, error: err });
+  }
+});
+
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
