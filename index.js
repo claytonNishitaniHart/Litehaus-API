@@ -51,16 +51,16 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      res.status(400).json({ error: 'email and password required' });
+      res.status(400).json({ success: false, error: 'email and password required' });
     }
 
     const userExists = await findUserByEmail(email);
     if (!userExists) {
-      return res.status(404).json({ error: 'user not found' });
+      return res.status(404).json({ success: false, error: 'user not found' });
     }
 
     if (!(await argon2.verify(userExists.password, password))) {
-      return res.status(401).json({ error: 'Incorrect password' });
+      return res.status(401).json({ success: false, error: 'Incorrect password' });
     }
 
     const payload = {
@@ -74,9 +74,9 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
     res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
 
-    return res.status(201).json({ success: 'user authenticated', token });
+    return res.status(201).json({ success: true, token });
   } catch (error) {
-    return res.status(500).json({ error: 500, message: error.message });
+    return res.status(500).json({ success: false, error: 500, message: error.message });
   }
 });
 
