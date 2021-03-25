@@ -23,7 +23,7 @@ app.post('/api/refresh_token', async (req, res) => {
   try {
     payload = jwt.verify(token, process.env.REFRESH_SECRET);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    return res.status(400).json({ error });
   }
 
   const newPayload = {
