@@ -151,6 +151,11 @@ app.post('/api/user', async (req, res) => {
   }
 });
 
+app.get('/api/reset_refresh_token', (req, res) => {
+  res.cookie('jid', '', { httpOnly: true });
+  res.status(200).json({ success: true });
+});
+
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
