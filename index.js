@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const cookie_parser = require('cookie-parser');
 const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
 
-app.use(cors());
+app.use(cors({ origin: process.env.ORIGIN }));
 app.use(express.json());
 app.use(cookie_parser());
 
@@ -34,7 +34,7 @@ app.post('/api/refresh_token', async (req, res) => {
 
   const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
   res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
-  return res.status(201).json({ success: true, accessToken: newAccessToken });
+  return res.status(201).json({ success: true, token: newAccessToken });
 });
 
 app.get('/api/users', async (req, res) => {
@@ -74,7 +74,7 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
     res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
 
-    return res.status(200).json({ success: 'user authenticated', token: token });
+    return res.status(201).json({ success: 'user authenticated', token });
   } catch (error) {
     return res.status(500).json({ error: 500, message: error.message });
   }
@@ -99,7 +99,13 @@ app.post('/api/register', async (req, res) => {
     if (user.error == 500) {
       return res.status(500).json({ error: user.error, message: user.message });
     }
-    return res.status(201).json(user);
+
+    const SECRET = process.env.SECRET;
+    const REFRESH_SECRET = process.env.REFRESH_SECRET;
+    const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
+
+    return res.status(201).json({ user, token });
   } catch (error) {
     return res.status(500).json({ error: 500, message: error.message });
   }
