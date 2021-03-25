@@ -100,6 +100,12 @@ app.post('/api/register', async (req, res) => {
       return res.status(500).json({ sucess: false, error: user.error, message: user.message });
     }
 
+    const payload = {
+      sub: email,
+      name: userExists.name,
+      iss: 'litehaus'
+    };
+
     const SECRET = process.env.SECRET;
     const REFRESH_SECRET = process.env.REFRESH_SECRET;
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
@@ -119,6 +125,8 @@ app.post('/api/user', async (req, res) => {
       return res.status(400).json({ success: false, error: 'authorization required' });
     }
 
+    console.log(authorization.startsWith('Bearer '));
+
     if (!authorization.startsWith('Bearer ')) {
       return res.status(401).json({ success: false, error: 'Incorrect prefix' });
     }
@@ -126,6 +134,7 @@ app.post('/api/user', async (req, res) => {
     const token = authorization.split(' ')[1];
 
     const SECRET = process.env.SECRET;
+    let user = {};
     try {
       const decoded = jwt.verify(token, SECRET);
 
@@ -133,12 +142,14 @@ app.post('/api/user', async (req, res) => {
       if (!usernameExists) {
         return res.status(401).json({ success: false, error: 'User not found' });
       }
+      user = { email: decoded.sub, name: decoded.name };
     } catch (err) {
-      return res.status(401).json({ success: false, error: err });
+      return res.status(401).json({ success: false, error: err.message });
     }
-    return res.status(201).json({ success: true, user: { email: decoded.sub, name: decoded.name } });
+
+    return res.status(201).json({ success: true, user });
   } catch (error) {
-    return res.status(401).json({ success: false, error: err });
+    return res.status(401).json({ success: false, error: error.message });
   }
 });
 
