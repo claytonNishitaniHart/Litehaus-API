@@ -85,19 +85,19 @@ app.post('/api/register', async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'name, email, and password required' });
+      return res.status(400).json({ success: false, error: 'name, email, and password required' });
     }
 
     const userExists = await findUserByEmail(email);
 
     if (userExists) {
-      return res.status(400).json({ error: 'user already exists', user: userExists });
+      return res.status(400).json({ success: false, error: 'user already exists', user: userExists });
     }
 
     const hashedPassword = await argon2.hash(password);
     const user = await postNewUser(name, email, hashedPassword);
     if (user.error == 500) {
-      return res.status(500).json({ error: user.error, message: user.message });
+      return res.status(500).json({ sucess: false, error: user.error, message: user.message });
     }
 
     const SECRET = process.env.SECRET;
@@ -105,9 +105,9 @@ app.post('/api/register', async (req, res) => {
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
     res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true });
 
-    return res.status(201).json({ user, token });
+    return res.status(201).json({ success: true, user, token });
   } catch (error) {
-    return res.status(500).json({ error: 500, message: error.message });
+    return res.status(500).json({ success: false, error: 500, message: error.message });
   }
 });
 
