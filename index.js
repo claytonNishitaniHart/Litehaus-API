@@ -23,7 +23,8 @@ app.post('/api/refresh_token', async (req, res) => {
   try {
     payload = jwt.verify(token, process.env.REFRESH_SECRET);
   } catch (error) {
-    return res.status(400).json({ error });
+    res.cookie('jid', '', { httpOnly: true });
+    return res.status(400).json({ success: false, token: '' });
   }
 
   const newPayload = {
@@ -140,7 +141,7 @@ app.post('/api/user', async (req, res) => {
       if (!usernameExists) {
         return res.status(401).json({ success: false, error: 'User not found' });
       }
-      user = { email: decoded.sub, name: decoded.name };
+      user = usernameExists;
     } catch (err) {
       return res.status(401).json({ success: false, error: err.message });
     }
