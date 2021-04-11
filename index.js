@@ -7,7 +7,7 @@ const cookie_parser = require('cookie-parser');
 const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
 
 const corsOptions = {
-  origin: 'http://localhost:3000/',
+  origin: 'http://localhost:3000',
   credentials: true
 };
 
