@@ -6,7 +6,12 @@ const jwt = require('jsonwebtoken');
 const cookie_parser = require('cookie-parser');
 const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000/',
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookie_parser());
 
