@@ -220,7 +220,7 @@ app.post('/api/setSymbols', async (req, res) => {
       }
       user = usernameExists;
 
-      user = await postNewSymbol(user.id, symbol);
+      user = await postNewSymbol(user.id, symbols);
     } catch (err) {
       return res.status(401).json({ success: false, error: err.message });
     }
