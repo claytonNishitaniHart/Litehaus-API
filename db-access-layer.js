@@ -35,15 +35,19 @@ const getSymbolsById = async (id) => {
   }
 };
 
-// const postNewSymbol = async (id, symbol) => {
-//   try {
-//     const newSymbol = await pool.query(
-//       'INSERT INTO users (symbols) VALUES'
-//     );
-//   } catch (error) {
-//     return { error };
-//   }
-// };
+const postNewSymbol = async (id, symbol) => {
+  try {
+    const newSymbols = await getSymbolsById(id);
+    newSymbols = newSymbols + ',' + symbol;
+    const updateSymbols = await pool.query(
+      'UPDATE users SET symbols=$2 WHERE id=$1',
+      [id, newSymbols]
+    );
+    return updateSymbols.rows[0];
+  } catch (error) {
+    return { error };
+  }
+};
 
 const findUserByEmail = async (email) => {
   try {
@@ -61,5 +65,6 @@ module.exports = {
   getUsers,
   postNewUser,
   getSymbolsById,
+  postNewSymbol,
   findUserByEmail
 };
