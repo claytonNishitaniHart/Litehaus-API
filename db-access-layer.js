@@ -37,7 +37,7 @@ const getSymbolsById = async (id) => {
 
 const postNewSymbol = async (id, symbol) => {
   try {
-    const newSymbols = await getSymbolsById(id);
+    let newSymbols = await getSymbolsById(id);
     newSymbols = newSymbols + ',' + symbol;
     const updateSymbols = await pool.query(
       'UPDATE users SET symbols=$2 WHERE id=$1',
