@@ -45,7 +45,7 @@ const postNewSymbol = async (id, symbol) => {
     );
     return updateSymbols.rows[0];
   } catch (error) {
-    return { error };
+    return { error: error.message };
   }
 };
 
