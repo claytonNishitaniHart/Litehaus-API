@@ -197,7 +197,7 @@ app.post('/api/getSymbols', async (req, res) => {
 app.post('/api/setSymbols', async (req, res) => {
   try {
     const { authorization } = req.headers;
-    const { symbol } = req.body;
+    const { symbols } = req.body;
 
     if (!authorization) {
       return res.status(400).json({ success: false, error: 'authorization required' });
