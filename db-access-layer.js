@@ -29,7 +29,7 @@ const getSymbolsById = async (id) => {
       'SELECT symbols FROM users WHERE id=$1',
       [id]
     );
-    return symbols.rows[0];
+    return symbols.rows[0].symbols;
   } catch (error) {
     return { error };
   }
