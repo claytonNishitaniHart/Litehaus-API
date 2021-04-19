@@ -23,6 +23,28 @@ const postNewUser = async (name, email, hashedPassword) => {
   }
 };
 
+const getSymbolsById = async (id) => {
+  try {
+    const symbols = await pool.query(
+      'SELECT symbols FROM users WHERE id=$1',
+      [id]
+    );
+    return symbols;
+  } catch (error) {
+    return { error };
+  }
+};
+
+// const postNewSymbol = async (id, symbol) => {
+//   try {
+//     const newSymbol = await pool.query(
+//       'INSERT INTO users (symbols) VALUES'
+//     );
+//   } catch (error) {
+//     return { error };
+//   }
+// };
+
 const findUserByEmail = async (email) => {
   try {
     const user = await pool.query(
@@ -38,5 +60,6 @@ const findUserByEmail = async (email) => {
 module.exports = {
   getUsers,
   postNewUser,
+  getSymbolsById,
   findUserByEmail
 };

@@ -4,7 +4,7 @@ const cors = require('cors');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const cookie_parser = require('cookie-parser');
-const { getUsers, postNewUser, findUserByEmail } = require('./db-access-layer');
+const { getUsers, postNewUser, getSymbolsById, findUserByEmail } = require('./db-access-layer');
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -152,6 +152,43 @@ app.post('/api/user', async (req, res) => {
     }
 
     return res.status(201).json({ success: true, user });
+  } catch (error) {
+    return res.status(401).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/getSymbols', async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+      return res.status(400).json({ success: false, error: 'authorization required' });
+    }
+
+    if (!authorization.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Incorrect prefix' });
+    }
+
+    const token = authorization.split(' ')[1];
+
+    const SECRET = process.env.SECRET;
+    let user = {};
+    let symbols;
+    try {
+      const decoded = jwt.verify(token, SECRET);
+
+      const usernameExists = await findUserByEmail(decoded.sub);
+      if (!usernameExists) {
+        return res.status(401).json({ success: false, error: 'User not found' });
+      }
+      user = usernameExists;
+
+      symbols = await getSymbolsById(user.id);
+    } catch (err) {
+      return res.status(401).json({ success: false, error: err.message });
+    }
+
+    return res.status(201).json({ success: true, symbols });
   } catch (error) {
     return res.status(401).json({ success: false, error: error.message });
   }
