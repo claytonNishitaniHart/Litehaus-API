@@ -28,7 +28,7 @@ app.post('/api/refresh_token', async (req, res) => {
   try {
     payload = jwt.verify(token, process.env.REFRESH_SECRET);
   } catch (error) {
-    res.cookie('jid', '', { httpOnly: true, path: '/' });
+    res.cookie('jid', '', { path: '/' });
     return res.status(400).json({ success: false, token: '' });
   }
 
@@ -39,7 +39,7 @@ app.post('/api/refresh_token', async (req, res) => {
   };
 
   const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
-  res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true, path: '/' });
+  res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { path: '/' });
   return res.status(201).json({ success: true, token: newAccessToken });
 });
 
@@ -78,7 +78,7 @@ app.post('/api/login', async (req, res) => {
     const SECRET = process.env.SECRET;
     const REFRESH_SECRET = process.env.REFRESH_SECRET;
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
-    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true, path: '/' });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { path: '/' });
 
     return res.status(201).json({ success: true, token });
   } catch (error) {
@@ -115,7 +115,7 @@ app.post('/api/register', async (req, res) => {
     const SECRET = process.env.SECRET;
     const REFRESH_SECRET = process.env.REFRESH_SECRET;
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
-    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { httpOnly: true, path: '/' });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { path: '/' });
 
     return res.status(201).json({ success: true, user, token });
   } catch (error) {
@@ -232,7 +232,7 @@ app.post('/api/setSymbols', async (req, res) => {
 });
 
 app.get('/api/reset_refresh_token', (req, res) => {
-  res.cookie('jid', 'reset_token', { httpOnly: true, path: '/' });
+  res.cookie('jid', 'reset_token', { path: '/' });
   res.status(200).json({ success: true });
 });
 
