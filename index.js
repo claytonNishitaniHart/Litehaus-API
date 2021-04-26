@@ -21,7 +21,7 @@ app.post('/api/refresh_token', async (req, res) => {
   const token = req.cookies.jid;
 
   if (!token) {
-    return res.status(201).json({ success: false, token: '', requestObj: req });
+    return res.status(201).json({ success: false, token: '' });
   }
 
   let payload = {};
@@ -41,7 +41,7 @@ app.post('/api/refresh_token', async (req, res) => {
   const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
   res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { path: '/' });
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  return res.status(201).json({ success: true, token: newAccessToken });
+  return res.status(201).json({ success: true, token: newAccessToken, oldToken: token });
 });
 
 app.get('/api/users', async (req, res) => {
