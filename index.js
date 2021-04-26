@@ -21,7 +21,7 @@ app.post('/api/refresh_token', async (req, res) => {
   const token = req.cookies.jid;
 
   if (!token) {
-    return res.status(201).json({ success: false, token: '', cookies: req.cookies });
+    return res.status(201).json({ success: false, token: '', requestObj: req });
   }
 
   let payload = {};
