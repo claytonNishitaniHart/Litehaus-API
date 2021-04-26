@@ -232,7 +232,7 @@ app.post('/api/setSymbols', async (req, res) => {
 });
 
 app.get('/api/reset_refresh_token', (req, res) => {
-  res.cookie('jid', null, { httpOnly: true, path: '/' });
+  res.cookie('jid', 'reset_token', { httpOnly: true, path: '/' });
   res.status(200).json({ success: true });
 });
 
