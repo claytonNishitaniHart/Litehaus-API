@@ -109,7 +109,7 @@ app.post('/api/register', async (req, res) => {
 
     const payload = {
       sub: email,
-      name: userExists.name,
+      name: user.name,
       iss: 'litehaus'
     };
 
