@@ -7,7 +7,7 @@ const cookie_parser = require('cookie-parser');
 const { getUsers, postNewUser, getSymbolsById, findUserByEmail, postNewSymbol } = require('./db-access-layer');
 
 const corsOptions = {
-  origin: 'https://litehaus.vercel.app',
+  origin: ['https://litehaus.vercel.app', 'http://localhost:3000'],
   credentials: true
 };
 
