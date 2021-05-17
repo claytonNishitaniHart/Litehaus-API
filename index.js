@@ -17,6 +17,8 @@ app.use(cookie_parser());
 
 const port = process.env.PORT || 5000;
 
+const cookieOptions = { path: '/', sameSite: 'none', secure: true, httpOnly: true, domain: 'https://litehaus.vercel.app' };
+
 app.post('/api/refresh_token', async (req, res) => {
   const token = req.cookies.jid;
 
@@ -28,7 +30,7 @@ app.post('/api/refresh_token', async (req, res) => {
   try {
     payload = jwt.verify(token, process.env.REFRESH_SECRET);
   } catch (error) {
-    res.cookie('jid', '', { path: '/', sameSite: 'none', secure: true, httpOnly: true });
+    res.cookie('jid', '', cookieOptions);
     return res.status(400).json({ success: false, token: '' });
   }
 
@@ -39,7 +41,7 @@ app.post('/api/refresh_token', async (req, res) => {
   };
 
   const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
-  res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { path: '/', sameSite: 'none', secure: true, httpOnly: true });
+  res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), cookieOptions);
   res.header("Access-Control-Allow-Origin", "https://litehaus.vercel.app");
   return res.status(201).json({ success: true, token: newAccessToken, oldToken: token });
 });
@@ -79,7 +81,7 @@ app.post('/api/login', async (req, res) => {
     const SECRET = process.env.SECRET;
     const REFRESH_SECRET = process.env.REFRESH_SECRET;
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
-    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { path: '/', sameSite: 'none', secure: true, httpOnly: true });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), cookieOptions);
 
     return res.status(201).json({ success: true, token });
   } catch (error) {
@@ -116,7 +118,7 @@ app.post('/api/register', async (req, res) => {
     const SECRET = process.env.SECRET;
     const REFRESH_SECRET = process.env.REFRESH_SECRET;
     const token = jwt.sign(payload, SECRET, { expiresIn: '15m' });
-    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), { path: '/', sameSite: 'none', secure: true, httpOnly: true });
+    res.cookie('jid', jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' }), cookieOptions);
 
     return res.status(201).json({ success: true, user, token });
   } catch (error) {
@@ -233,7 +235,7 @@ app.post('/api/setSymbols', async (req, res) => {
 });
 
 app.get('/api/reset_refresh_token', (req, res) => {
-  res.cookie('jid', '', { path: '/', sameSite: 'none', secure: true, httpOnly: true });
+  res.cookie('jid', '', cookieOptions);
   res.status(200).json({ success: true });
 });
 
