@@ -40,7 +40,7 @@ app.post('/api/refresh_token', async (req, res) => {
 
   const newAccessToken = jwt.sign(newPayload, process.env.SECRET, { expiresIn: '15m' });
   res.cookie('jid', jwt.sign(newPayload, process.env.REFRESH_SECRET, { expiresIn: '7d' }), { path: '/', sameSite: 'none', secure: true });
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.header("Access-Control-Allow-Origin", ["http://localhost:3000", "https://litehaus.vercel.app"]);
   return res.status(201).json({ success: true, token: newAccessToken, oldToken: token });
 });
 
